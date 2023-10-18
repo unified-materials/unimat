@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en-GB" class="no-js fixed-nav">
+<head>
+	<meta charset="UTF-8">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="format-detection" content="telephone=no">
+	<meta name='robots' content='index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' />
+
+	<title>UniMat: Scalable Diffusion for Materials Generation</title>
+
+
+	<link rel='stylesheet' id='wayve-all-css' href='style.css' type='text/css' media='all' />
+	<link rel='stylesheet' id='wayve-all-css' href='custom.css' type='text/css' media='all' />
+	<script src="script.js" defer></script>
+	<script src="bootstrap.js"></script>
+	<link rel="stylesheet" href="bootstrap-grid.css">
+	    
+</head>
+
+<nav>
+  <ul>
+        <li><a href="#representation" data-scroll>UniMat Representation</a></li>
+        <li><a href="#diffusion" data-scroll>Materials Diffusion</a></li>
+	<li><a href="#dft" data-scroll>DFT Verification</a></li>
+	<li><a href="#visualization" data-scroll>Generated Structures</a></li>
+    </ul>
+</nav>
+
+
+<article class='blog-post'>
+
+  <div class=blog-intro-container>
+  <h1 class='too-long' style="text-align:center;">UniMat: Scalable Diffusion for Materials Generation</h1>
+
+    <div id="authors">
+        <center>
+            <div class="author-row-new">
+              <a href="https://sherryy.github.io/" style="color: darkblue; text-decoration: none;">Sherry Yang<sup>12</sup></a>,
+              <a href="https://www.linkedin.com/in/ruben-cho" style="color: darkblue; text-decoration: none;">KwangHwan Cho<sup>2</sup></a>,
+              <a href="https://scholar.google.com/citations?user=uRImMPoAAAAJ&hl=en" style="color: darkblue; text-decoration: none;">Amil Merchant<sup>1</sup></a>,	      
+              <a href="http://people.eecs.berkeley.edu/~pabbeel/" style="color: darkblue; text-decoration: none;">Pieter Abbeel<sup>2</sup></a>,
+              <a href="http://webdocs.cs.ualberta.ca/~dale/" style="color: darkblue; text-decoration: none;">Dale Schuurmans<sup>1</sup></a>,
+              <a href="https://scholar.google.com/citations?user=Vzr1RukAAAAJ&hl=en" style="color: darkblue; text-decoration: none;">Igor Mordatch<sup>1</sup></a>,
+              <a href="https://research.google/people/EkinDogusCubuk/" style="color: darkblue; text-decoration: none;">Ekin Dogus Cubuk<sup>1</sup></a>
+            </div>
+        </center>
+        <center>
+        <div class="affiliations">
+            <span><sup>1</sup> Google DeepMind</span>
+            <span><sup>2</sup> UC Berkeley</span>
+        </div>
+    </div>  
+  </div>  
+  
+      
+<div id="video-player-container">
+
+
+<!-- Video Display -->
+<div class="single-image">
+    <span>
+        <video id="videoPlayer" loop muted playsinline autoplay width="540" height="560">
+            <source src="materials/unimat.mp4" type="video/mp4">
+        </video>
+    </span>
+</div>
+
+</div>
+
+
+<div class=blog-intro-container>
+  <p style="text-align:center"><a href="materials/paper.pdf" target="_blank" rel="noopener" data-display-type="button" class="custom-button">paper</a></p>  
+  <div class=intro>
+    <p><span style="font-weight: 400;">Generative models trained on internet-scale data are capable of generating novel and realistic texts, images, and videos. A natural next question is whether these models can advance science, for example by generating novel stable materials. Traditionally, models with explicit structures (e.g., graphs) have been used in modeling structural relationships in scientific data (e.g., atoms and bonds in crystals), but generating structures can be difficult to scale to large and complex systems. Another challenge in generating materials is the mismatch between standard generative modeling metrics and downstream applications. For instance, common metrics such as the reconstruction error do not correlate well with the downstream goal of discovering  stable materials. In this work, we tackle the scalability challenge by developing a <b>unified crystal representation</b> that can represent any crystal structure (UniMat), followed by training a diffusion probabilistic model on these  UniMat  representations. Our empirical results suggest that despite the lack of explicit structure modeling,  UniMat  can generate high fidelity crystal structures from larger and more complex chemical systems, outperforming previous graph-based approaches under various generative modeling metrics. To better connect the generation quality of materials to downstream applications, such as discovering novel stable materials, we propose additional metrics for evaluating generative models of materials, including per-composition formation energy and stability with respect to convex hulls through decomposition energy from Density Function Theory (DFT). Lastly, we show that conditional generation with  UniMat  can scale to previously established crystal datasets with up to millions of crystals structures, outperforming random structure search (the current leading method for structure discovery) in discovering new stable materials.</p>
+  </div>
+</div>
+
+
+  
+<div class="copy" >
+
+<div class="copy" >
+  <div class=content id="representation">    
+    <h2><span style="font-weight: 400;">Unified Crystal Representation</span></h2>
+    <p>
+      UniMat represents atoms in a material’s unit cell (the smallest repeating unit) by storing the continuous value x,y,z atom locations at the corresponding element entry in the periodic table. Any crystals can be represented in a 4-dimensional unified material space, [L,H,W,C], where L = 9 and H = 18 correspond to the number of periods and groups in the periodic table, L corresponds to the maximum number of atoms per element in the periodic table, and C = 3 corresponds to the x,y,z locations of each atoms in a unit cell. An example crystal represented by UniMat is shown below:
+    </p>
+  </div>
+</div>
+
+<div class="single-image width-content">
+  <span>
+    <img width="860" height="645" src="materials/framework.png" class="attachment-full-width size-full-width" size="(max-width:860px) 100vw, 860px">
+  </span>
+</div>
+
+
+<div class="copy" >
+  <div class=content id="diffusion">
+    <h2><span style="font-weight: 400;">Diffusion Models with UniMat</span></h2>
+    <p> 
+      With the above UniMat representation, we can use the denoising process of a diffusion model to move atoms from random initialized locations to their target locations in a unit cell as shown below. We denote x=y=z=-1 as a null location. Atoms that do not exist in a unit cell are moved to the null location.
+    </p>
+  </div>
+</div>
+
+<div class="single-image width-content">
+  <span>
+    <img width="860" height="645" src="materials/diffusion.png" class="attachment-full-width size-full-width" size="(max-width:860px) 100vw, 860px">
+  </span>
+</div>
+
+<div class="copy" >
+  <div class=content id="rl">    
+    <p> 
+      One can condition generation on compositions by treating compositions as conditional input to the UNet. One may also condition generation on material properties through classifier-free guidance.
+    </p>
+  </div>
+</div>
+
+
+<div class="copy" >
+  <div class=content id="dft">    
+    <h2><span style="font-weight: 400;">DFT Verification</span></h2>
+    <p>
+      We run DFT relaxations to compute the decomposition energy of unconditionally generated materials and compared that to the previous baseline (CDVAE). UniMat generates materials with significantly lower decomposition energy.
+    </p>
+  </div>
+</div>
+
+<div class="single-image width-content">
+  <span>
+    <img width="660" height="445" src="materials/ed.png" class="attachment-full-width size-full-width" size="(max-width:860px) 100vw, 860px">
+  </span>
+</div>
+
+<div class="copy" >
+  <div class=content id="visualization">    
+    <h2><span style="font-weight: 400;">Generated Structures</span></h2>
+    <p>
+      We visualize unconditionally generated structures below and compare generated structures to the structures in the held-out test set (matched by formula).
+    </p>
+  </div>
+</div>
+
+<div class="single-image width-content">
+  <span>
+    <img width="660" height="445" src="materials/example_test.png" class="attachment-full-width size-full-width" size="(max-width:860px) 100vw, 860px">
+  </span>
+</div>
+
+<div class="copy" >
+  <div class=content>    
+    <p>
+      We visualize unconditionally generated structures whose formulas do not exist in the test set below.
+    </p>
+  </div>
+</div>
+
+<div class="single-image width-content">
+  <span>
+    <img width="1060" height="645" src="materials/example.png" class="attachment-full-width size-full-width" size="(max-width:860px) 100vw, 860px">
+  </span>
+</div>
+
+
+    <section id="bibtex">
+        <h2>Citation</h2>
+        <hr>
+        <pre><code>@article{yang2023scalable,
+	    title={Scalable Diffusion for Materials Discovery},
+	    author={Yang, Mengjiao and Cho, KwangHwan and Merchant, Amil and Abbeel, Pieter and Schuurmans, Dale and Mordatch, Igor and Cubuk, Ekin Dogus},
+	    journal={arXiv e-prints},
+	    year={2023}
+	    }</code></pre>
+    </section>
+
+
+</html>
+
+
